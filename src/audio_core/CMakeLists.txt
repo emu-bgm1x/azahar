@@ -18,6 +18,12 @@ add_library(audio_core STATIC EXCLUDE_FROM_ALL
     hle/shared_memory.h
     hle/source.cpp
     hle/source.h
+    hle/bgm_replacer.cpp
+    hle/bgm_replacer.h
+    hle/sfx_mirror.cpp
+    hle/sfx_mirror.h
+    hle/sound_catalog.cpp
+    hle/sound_catalog.h
     lle/lle.cpp
     lle/lle.h
     input.h

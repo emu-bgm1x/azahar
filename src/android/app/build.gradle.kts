@@ -91,6 +91,12 @@ android {
         // ^ Has no suffix, unlike VERSION_NAME
         buildConfigField("String", "GIT_HASH", "\"${getGitHash()}\"")
         buildConfigField("String", "BRANCH", "\"${getBranch()}\"")
+
+        // ff-bgm1x: 소리 분류는 항상 들어간다. -PffbgmLab=true 면 기존 앱과 따로 설치되는 별도 앱
+        val ffbgmLab = (project.findProperty("ffbgmLab") as String?) == "true"
+        if (ffbgmLab) applicationIdSuffix = ".lab"
+        buildConfigField("boolean", "FF_LAB", "true")
+        manifestPlaceholders["ffAppLabel"] = if (ffbgmLab) "Azahar 1x Lab" else "@string/app_name"
     }
 
     val keystoreFile = System.getenv("ANDROID_KEYSTORE_FILE")

@@ -41,6 +41,10 @@ public:
     [[nodiscard]] static std::string GetLibraryName(std::string_view name, int major = -1,
                                                     int minor = -1);
 
+    /// ff-bgm1x: handle of the running executable itself (with its own reference), for libraries
+    /// linked statically into the exe whose functions are exported from it
+    [[nodiscard]] static void* SelfHandle();
+
 private:
     void* GetRawSymbol(std::string_view name) const;
 

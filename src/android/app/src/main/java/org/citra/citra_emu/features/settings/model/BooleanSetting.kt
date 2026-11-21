@@ -93,6 +93,9 @@ enum class BooleanSetting(
         Settings.SECTION_AUDIO,
         false
     ),
+    FF_BGM1X_BGM_1X(SettingKeys.ff_bgm1x_bgm_1x(), Settings.SECTION_AUDIO, true),
+    FF_BGM1X_FF_CUTSCENES(SettingKeys.ff_bgm1x_ff_cutscenes(), Settings.SECTION_AUDIO, false),
+    FF_BGM1X_VOICES_1X(SettingKeys.ff_bgm1x_voices_1x(), Settings.SECTION_AUDIO, true),
     CPU_JIT(SettingKeys.use_cpu_jit(), Settings.SECTION_CORE, true),
     HW_SHADER(SettingKeys.use_hw_shader(), Settings.SECTION_RENDERER, true),
     SHADER_JIT(SettingKeys.use_shader_jit(), Settings.SECTION_RENDERER, true),

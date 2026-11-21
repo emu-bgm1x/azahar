@@ -354,7 +354,8 @@ class EmulationActivity : AppCompatActivity() {
             return false
         }
 
-        if (emulationFragment.isDrawerOpen()) {
+        // ff-bgm1x: 배치 편집기가 열려 있으면 키보드 입력(숫자 칸)이 화면으로 가야 한다
+        if (emulationFragment.isDrawerOpen() || emulationFragment.isLayoutEditorOpen()) {
             return super.dispatchKeyEvent(event)
         }
 
@@ -613,6 +614,13 @@ class EmulationActivity : AppCompatActivity() {
         }
         return true
     }
+
+    // ff-bgm1x: 스킨 zip 고르기. 화면(조각)이 아니라 액티비티에 두어, 고르기 화면이 다른 방향으로 열려 돌아오며
+    // 게임 화면 조각이 새로 만들어져도 결과를 잃지 않는다 (조각에 두면 결과가 사라졌다)
+    val ffSkinPicker =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+            runCatching { emulationFragment }.getOrNull()?.onSkinPicked(uri)
+        }
 
     val openAmiiboFileLauncher =
         registerForActivityResult(OpenFileResultContract()) { result: Intent? ->

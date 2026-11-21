@@ -15,6 +15,7 @@
 
 #include <core/hle/service/cfg/cfg.h>
 #include "audio_core/dsp_interface.h"
+#include "audio_core/hle/bgm_replacer.h"
 #include "common/arch.h"
 
 #if CITRA_ARCH(arm64)
@@ -77,6 +78,43 @@ namespace {
 
 ANativeWindow* s_surface;
 ANativeWindow* s_secondary_surface;
+
+// ff-bgm1x: per-game screen layout from the layout editor ("This game").
+// Index 0 = landscape, 1 = portrait. Values: top x, y, w, h, bottom x, y, w, h.
+// Re-applied after every Config{} so the global config.ini stays untouched.
+struct FfLayoutOverride {
+    bool on = false;
+    u16 v[8] = {};
+};
+FfLayoutOverride s_ff_layout_override[2];
+
+void ApplyFfLayoutOverride() {
+    const auto& l = s_ff_layout_override[0];
+    if (l.on) {
+        Settings::values.layout_option.SetValue(Settings::LayoutOption::CustomLayout);
+        Settings::values.custom_top_x.SetValue(l.v[0]);
+        Settings::values.custom_top_y.SetValue(l.v[1]);
+        Settings::values.custom_top_width.SetValue(l.v[2]);
+        Settings::values.custom_top_height.SetValue(l.v[3]);
+        Settings::values.custom_bottom_x.SetValue(l.v[4]);
+        Settings::values.custom_bottom_y.SetValue(l.v[5]);
+        Settings::values.custom_bottom_width.SetValue(l.v[6]);
+        Settings::values.custom_bottom_height.SetValue(l.v[7]);
+    }
+    const auto& p = s_ff_layout_override[1];
+    if (p.on) {
+        Settings::values.portrait_layout_option.SetValue(
+            Settings::PortraitLayoutOption::PortraitCustomLayout);
+        Settings::values.custom_portrait_top_x.SetValue(p.v[0]);
+        Settings::values.custom_portrait_top_y.SetValue(p.v[1]);
+        Settings::values.custom_portrait_top_width.SetValue(p.v[2]);
+        Settings::values.custom_portrait_top_height.SetValue(p.v[3]);
+        Settings::values.custom_portrait_bottom_x.SetValue(p.v[4]);
+        Settings::values.custom_portrait_bottom_y.SetValue(p.v[5]);
+        Settings::values.custom_portrait_bottom_width.SetValue(p.v[6]);
+        Settings::values.custom_portrait_bottom_height.SetValue(p.v[7]);
+    }
+}
 
 enum class CompressionStatus : jint {
     Success = 0,
@@ -287,6 +325,7 @@ static Core::System::ResultStatus RunCitra(const std::string& filepath) {
 
     // Forces a config reload on game boot, if the user changed settings in the UI
     Config{};
+    ApplyFfLayoutOverride();
     // Replace with game-specific settings
     u64 program_id{};
     FileUtil::SetCurrentRomPath(filepath);
@@ -378,6 +417,10 @@ static Core::System::ResultStatus RunCitra(const std::string& filepath) {
             const float volume = Settings::values.volume.GetValue();
             SCOPE_EXIT({ Settings::values.volume = volume; });
             Settings::values.volume = 0;
+
+            // ff-bgm1x: 사용자가 일시정지한 동안 대체 재생도 멈춘다
+            AudioCore::HLE::BgmReplacer::Instance().SetEmulationRunning(false);
+            SCOPE_EXIT({ AudioCore::HLE::BgmReplacer::Instance().SetEmulationRunning(true); });
 
             std::unique_lock pause_lock{paused_mutex};
             running_cv.wait(pause_lock, [] { return !pause_emulation || stop_run; });
@@ -540,6 +583,24 @@ void Java_org_citra_citra_1emu_NativeLibrary_notifyOrientationChange([[maybe_unu
                                                                      jint rotation,
                                                                      jboolean portrait) {
     Settings::values.layout_option = static_cast<Settings::LayoutOption>(layout_option);
+    ApplyFfLayoutOverride();
+}
+
+// ff-bgm1x: set or clear the per-game screen layout for one orientation (values: 8 ints, see above)
+void Java_org_citra_citra_1emu_NativeLibrary_ffSetLayoutOverride(JNIEnv* env,
+                                                                 [[maybe_unused]] jobject obj,
+                                                                 jboolean portrait, jboolean on,
+                                                                 jintArray j_values) {
+    auto& o = s_ff_layout_override[portrait ? 1 : 0];
+    o.on = on;
+    if (on && j_values != nullptr && env->GetArrayLength(j_values) >= 8) {
+        jint values[8];
+        env->GetIntArrayRegion(j_values, 0, 8, values);
+        for (int i = 0; i < 8; i++) {
+            o.v[i] = static_cast<u16>(std::max<jint>(0, values[i]));
+        }
+    }
+    ApplyFfLayoutOverride();
 }
 void Java_org_citra_citra_1emu_NativeLibrary_updateFramebuffer([[maybe_unused]] JNIEnv* env,
                                                                [[maybe_unused]] jobject obj,
@@ -1009,6 +1070,7 @@ void Java_org_citra_citra_1emu_NativeLibrary_logUserDirectory(JNIEnv* env,
 void Java_org_citra_citra_1emu_NativeLibrary_reloadSettings([[maybe_unused]] JNIEnv* env,
                                                             [[maybe_unused]] jobject obj) {
     Config{};
+    ApplyFfLayoutOverride();
     Core::System& system{Core::System::GetInstance()};
 
     // Replace with game-specific settings

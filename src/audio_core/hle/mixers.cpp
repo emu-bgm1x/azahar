@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include "audio_core/hle/bgm_replacer.h"
 #include "audio_core/hle/mixers.h"
 #include "common/assert.h"
 #include "common/logging/log.h"
@@ -74,6 +75,9 @@ void Mixers::ParseConfig(DspConfiguration& config) {
         state.intermediate_mixer_volume[2] = config.aux_return_volume[1];
         LOG_TRACE(Audio_DSP, "mixers aux_return_volume[1] = {}", config.aux_return_volume[1]);
     }
+
+    // ff-bgm1x: 대체 재생 BGM 도 같은 믹서 볼륨을 쓴다
+    BgmReplacer::Instance().UpdateMixerVolumes(state.intermediate_mixer_volume);
 
     if (config.output_format_dirty) {
         config.output_format_dirty.Assign(0);

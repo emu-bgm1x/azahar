@@ -79,6 +79,7 @@ Values values = {};
 static bool configuring_global = true;
 bool is_temporary_frame_limit;
 double temporary_frame_limit;
+std::atomic<bool> cutscene_speed_hold{false};  // ff-bgm1x
 
 void LogSettings() {
     const auto log_setting = [](std::string_view name, const auto& value) {

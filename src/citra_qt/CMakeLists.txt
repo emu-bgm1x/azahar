@@ -29,6 +29,8 @@ add_library(citra_qt STATIC EXCLUDE_FROM_ALL
     camera/qt_multimedia_camera.h
     citra_qt.cpp
     citra_qt.h
+    ff_sound_catalog_dialog.cpp
+    ff_sound_catalog_dialog.h
     configuration/config.cpp
     configuration/config.h
     configuration/configure.ui

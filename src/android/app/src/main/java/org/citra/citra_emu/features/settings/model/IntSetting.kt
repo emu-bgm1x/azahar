@@ -65,7 +65,8 @@ enum class IntSetting(
     ),
     RENDER_3D_WHICH_DISPLAY(SettingKeys.render_3d_which_display(), Settings.SECTION_RENDERER, 0),
     ASPECT_RATIO(SettingKeys.aspect_ratio(), Settings.SECTION_LAYOUT, 0),
-    UPDATE_CHECK_CHANNEL(SettingKeys.update_check_channel(), Settings.SECTION_MISC, 0);
+    UPDATE_CHECK_CHANNEL(SettingKeys.update_check_channel(), Settings.SECTION_MISC, 0),
+    FF_BGM1X_SFX_VOLUME(SettingKeys.ff_bgm1x_sfx_volume(), Settings.SECTION_AUDIO, 100);
 
     override var int: Int = defaultValue
 

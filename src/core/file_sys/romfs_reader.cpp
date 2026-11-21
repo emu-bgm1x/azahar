@@ -6,6 +6,7 @@
 #include <vector>
 #include <cryptopp/aes.h>
 #include <cryptopp/modes.h>
+#include "audio_core/hle/bgm_replacer.h"
 #include "common/archives.h"
 #include "common/logging/log.h"
 #include "core/file_sys/archive_artic.h"
@@ -22,6 +23,9 @@ std::size_t DirectRomFSReader::ReadFile(std::size_t offset, std::size_t length, 
     length = std::min(length, GetSize() - offset);
     if (length == 0)
         return 0; // Crypto++ does not like zero size buffer
+
+    // ff-bgm1x: 동영상 파일을 읽는 동안은 연출로 본다
+    AudioCore::HLE::BgmReplacer::Instance().OnRomFsRead(*this, offset, length);
 
     const auto segments = BreakupRead(offset, length);
     std::size_t read_progress = 0;

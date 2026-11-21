@@ -99,6 +99,11 @@ const std::vector<UISettings::Shortcut> QtConfig::default_hotkeys{ {
      {QStringLiteral("Toggle Status Bar"),        QStringLiteral("Main Window"), {QStringLiteral("Ctrl+S"), QStringLiteral(""), Qt::ApplicationShortcut}},
      {QStringLiteral("Toggle Texture Dumping"),   QStringLiteral("Main Window"), {QStringLiteral(""),       QStringLiteral(""), Qt::ApplicationShortcut}},
      {QStringLiteral("Toggle Turbo Mode"),        QStringLiteral("Main Window"), {QStringLiteral(""),      QStringLiteral(""), Qt::ApplicationShortcut}},
+     // ff-bgm1x: 기본 키 없음
+     {QStringLiteral("Toggle BGM at 1x Speed"),   QStringLiteral("Main Window"), {QStringLiteral(""),      QStringLiteral(""), Qt::ApplicationShortcut}},
+     {QStringLiteral("Toggle Fast Forward During Cutscenes"), QStringLiteral("Main Window"), {QStringLiteral(""), QStringLiteral(""), Qt::ApplicationShortcut}},
+     {QStringLiteral("Toggle Voices at 1x Speed"), QStringLiteral("Main Window"), {QStringLiteral(""),     QStringLiteral(""), Qt::ApplicationShortcut}},
+     {QStringLiteral("Open Sound Classification"), QStringLiteral("Main Window"), {QStringLiteral(""),     QStringLiteral(""), Qt::ApplicationShortcut}},
     } };
 // clang-format on
 
