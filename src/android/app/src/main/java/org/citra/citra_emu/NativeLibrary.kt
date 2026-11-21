@@ -128,6 +128,9 @@ object NativeLibrary {
 
     external fun reloadSettings()
 
+    // ff-bgm1x: 이 게임 전용 화면 배치 (위 x,y,w,h, 아래 x,y,w,h). on=false 면 끈다 (끈 뒤 reloadSettings 로 원래 값)
+    external fun ffSetLayoutOverride(portrait: Boolean, on: Boolean, values: IntArray?)
+
     external fun getTitleId(filename: String): Long
 
     external fun getIsSystemTitle(path: String): Boolean
@@ -207,6 +210,7 @@ object NativeLibrary {
      * Returns the title ID of the currently running title, or 0 on failure.
      */
     external fun getRunningTitleId(): Long
+
 
     /**
      * Returns the performance stats for the current game
@@ -1087,6 +1091,8 @@ object NativeLibrary {
         const val BUTTON_GPIO14 = 782
         const val BUTTON_SWAP = 800
         const val BUTTON_TURBO = 801
+        // ff-bgm1x: 화면 메뉴 버튼 (한 번 누르면 에뮬레이션 메뉴를 연다, 코어에는 의미 없음)
+        const val BUTTON_MENU = 802
     }
 
     /**
